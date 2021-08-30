@@ -56,6 +56,7 @@ def save_auction_in_db_without_scrape_status(
     auction = Auction(number=auction_number, name=auction_name, year=auction_year)
     session.add(auction)
     session.commit()
+    return auction.id
 
 
 def get_auction_number_from_name(auction_name):
@@ -66,8 +67,11 @@ def create_auction_lot_url_from_number(auction_number):
     return f"https://www.bukowskis.com/auctions/{auction_number}/lots"
 
 
-def scrape_and_store_auction(auction_lot_url, db_engine):
-    get_lots_by_department(auction_lot_url).to_sql(
+def scrape_and_store_auction(auction_lot_url, auction_id, auction_year, db_engine):
+    df = get_lots_by_department(auction_lot_url)
+    df['auction_year'] = auction_year
+    df['auction_id'] = auction_id
+    df.to_sql(
         "lots", db_engine, if_exists="append", index=False
     )
 
@@ -83,14 +87,14 @@ def scrape_auctions(auctions_to_scrape, db_engine):
                 print(auction_name, "does not exist in database, will try to scrape.")
                 auction_number = get_auction_number_from_name(auction_name)
 
-                save_auction_in_db_without_scrape_status(
+                auction_id = save_auction_in_db_without_scrape_status(
                     auction_number, auction_name, year
                 )
 
                 auction_lot_url = create_auction_lot_url_from_number(auction_number)
 
                 try:
-                    scrape_and_store_auction(auction_lot_url, db_engine)
+                    scrape_and_store_auction(auction_lot_url, auction_id, year, db_engine)
                     set_auction_successfully_scraped_value(auction_name, 1)
                 except Exception as e:
                     print("Scraping ran in to error:", e)

@@ -10,7 +10,7 @@ class Lot(SqlAlchemyBase):
     number = Column(Integer)
     name = Column(String)
     auction_id = Column(String)
-    auction_date = Column(Date)
+    auction_year = Column(Date)
     department = Column(String)
     min_estimate = Column(Integer)
     max_estimate = Column(Integer)
