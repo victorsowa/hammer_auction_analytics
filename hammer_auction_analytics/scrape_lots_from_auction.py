@@ -2,7 +2,7 @@ import pandas as pd
 
 from scrape_lots_from_lot_page import get_information_from_lots, get_page, get_soup
 
-AUCTION_URL = "https://www.bukowskis.com/auctions/631/lots"
+AUCTION_URL = "https://www.bukowskis.com/auctions/567/lots"
 
 NON_DEPARTMENT_SEARCH_FILTERS = [
     "Kortast tid kvar",
@@ -65,8 +65,11 @@ def get_url_friendly_department_names(departments):
 
 
 def get_lots_by_department(auction_url):
-    departments = get_all_departments(AUCTION_URL)
+    departments = get_all_departments(auction_url)
     url_friendly_departments = get_url_friendly_department_names(departments)
+
+    if len(departments) == 0:
+        return get_lots_from_all_subpages(auction_url)
 
     department_dfs = []
 
