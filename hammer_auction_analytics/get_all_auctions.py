@@ -1,4 +1,4 @@
-from scrape_lots_from_lot_page import get_page, get_soup
+from shared import get_page, get_soup
 
 PREVIOUS_AUCTIONS_URL = "https://www.bukowskis.com/sv/auctions/past/hammer"
 

@@ -1,6 +1,8 @@
 import pandas as pd
 
-from scrape_lots_from_lot_page import get_information_from_lots, get_page, get_soup
+from scrape_lots_from_lot_page import get_information_from_lots
+from shared import get_page, get_soup
+
 
 AUCTION_URL = "https://www.bukowskis.com/auctions/567/lots"
 
