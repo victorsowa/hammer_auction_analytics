@@ -6,7 +6,7 @@ sys.path.insert(0, folder)
 
 from sqlalchemy.orm import sessionmaker
 
-from scrape_lots_from_lot_page import get_page, get_soup
+from shared import get_page, get_soup
 from scrape_lots_from_auction import get_lots_by_department
 from get_all_auctions import get_all_auctions
 from db.db_session import global_init, create_session
@@ -69,11 +69,9 @@ def create_auction_lot_url_from_number(auction_number):
 
 def scrape_and_store_auction(auction_lot_url, auction_id, auction_year, db_engine):
     df = get_lots_by_department(auction_lot_url)
-    df['auction_year'] = auction_year
-    df['auction_id'] = auction_id
-    df.to_sql(
-        "lots", db_engine, if_exists="append", index=False
-    )
+    df["auction_year"] = auction_year
+    df["auction_id"] = auction_id
+    df.to_sql("lots", db_engine, if_exists="append", index=False)
 
 
 def scrape_auctions(auctions_to_scrape, db_engine):
@@ -92,9 +90,11 @@ def scrape_auctions(auctions_to_scrape, db_engine):
                 )
 
                 auction_lot_url = create_auction_lot_url_from_number(auction_number)
-
+                scrape_and_store_auction(auction_lot_url, auction_id, year, db_engine)
                 try:
-                    scrape_and_store_auction(auction_lot_url, auction_id, year, db_engine)
+                    scrape_and_store_auction(
+                        auction_lot_url, auction_id, year, db_engine
+                    )
                     set_auction_successfully_scraped_value(auction_name, 1)
                 except Exception as e:
                     print("Scraping ran in to error:", e)

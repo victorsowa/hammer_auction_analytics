@@ -1,20 +1,11 @@
 from collections import namedtuple
 
-import requests
-from bs4 import BeautifulSoup
+from shared import get_page, get_soup
 
 
 Lot = namedtuple("Lot", "number name estimate result")
 Estimates = namedtuple("Estimates", "min max currency")
 Result = namedtuple("Result", "value currency")
-
-
-def get_page(url):
-    return requests.get(url)
-
-
-def get_soup(page_content):
-    return BeautifulSoup(page_content, "html.parser")
 
 
 def separate_lot_number_and_name(lot_title):

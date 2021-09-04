@@ -1,6 +1,8 @@
 import pandas as pd
 
-from scrape_lots_from_lot_page import get_information_from_lots, get_page, get_soup
+from scrape_lots_from_lot_page import get_information_from_lots
+from shared import get_page, get_soup
+
 
 AUCTION_URL = "https://www.bukowskis.com/auctions/567/lots"
 
@@ -69,7 +71,8 @@ def get_lots_by_department(auction_url):
     url_friendly_departments = get_url_friendly_department_names(departments)
 
     if len(departments) == 0:
-        return get_lots_from_all_subpages(auction_url)
+        lots = get_lots_from_all_subpages(auction_url)
+        return pd.DataFrame(lots)
 
     department_dfs = []
 
