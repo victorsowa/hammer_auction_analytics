@@ -12,6 +12,12 @@ NON_DEPARTMENT_SEARCH_FILTERS = [
     "Högsta utropspris",
     "Bokstavsordning",
     "Endast favoriter",
+    "Ending soon",
+    "Alphabetical",
+    "Lowest estimate",
+    "Highest estimate",
+    "Catalogue number",
+    "Only favourites",
 ]
 
 
@@ -51,16 +57,22 @@ def get_all_departments(lots_url):
     ]
 
 
+def replace_url_unfriendly_characters_in_department_name(department):
+    return (
+        department.replace(" &", "")
+        .replace(" ", "-")
+        .lower()
+        .replace("ö", "o")
+        .replace("å", "a")
+        .replace("ä", "a")
+    )
+
+
 def get_url_friendly_department_names(departments):
     url_friendly_department_names = []
     for department in departments:
-
-        url_friendly_name = (
-            department.replace(" ", "-")
-            .lower()
-            .replace("ö", "o")
-            .replace("å", "a")
-            .replace("ä", "a")
+        url_friendly_name = replace_url_unfriendly_characters_in_department_name(
+            department
         )
         url_friendly_department_names.append(url_friendly_name)
     return url_friendly_department_names
