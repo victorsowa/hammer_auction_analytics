@@ -61,7 +61,7 @@ def test_get_all_departments_get_empty_list_where_there_are_no_departments():
     assert departments == []
 
 
-def test_get_results_by_department():
+def test_get_results_by_department_get_expected_departments():
     departments = RESULTS_FROM_AUCTION_WITH_DEPARTMENTS_BY_DEPARTMENT[
         "department"
     ].unique()
