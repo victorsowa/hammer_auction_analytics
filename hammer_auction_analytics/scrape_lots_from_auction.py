@@ -80,6 +80,9 @@ def get_url_friendly_department_names(departments):
 
 def get_lots_by_department(auction_url):
     departments = get_all_departments(auction_url)
+    print("Found", len(departments), "departments.")
+    print(departments)
+
     url_friendly_departments = get_url_friendly_department_names(departments)
 
     if len(departments) == 0:
@@ -93,6 +96,7 @@ def get_lots_by_department(auction_url):
         department_lots = get_lots_from_all_subpages(department_url)
         department_df = pd.DataFrame(department_lots)
         department_df["department"] = department
+        print("Number of scraped objects in department:", department_df.shape[0])
         department_dfs.append(department_df)
 
     return pd.concat(department_dfs, ignore_index=True)

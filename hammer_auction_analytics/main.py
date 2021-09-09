@@ -90,7 +90,7 @@ def scrape_auctions(auctions_to_scrape, db_engine):
                 )
 
                 auction_lot_url = create_auction_lot_url_from_number(auction_number)
-                scrape_and_store_auction(auction_lot_url, auction_id, year, db_engine)
+
                 try:
                     scrape_and_store_auction(
                         auction_lot_url, auction_id, year, db_engine
