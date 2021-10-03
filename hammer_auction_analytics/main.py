@@ -1,9 +1,11 @@
 import sys
 import os
+from typing import List
 
 folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, folder)
 
+import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 
 from shared import get_page, get_soup
@@ -18,29 +20,29 @@ PREVIOUS_AUCTIONS_URL = "https://www.bukowskis.com/sv/auctions/past/hammer"
 DATABASE_NAME = "db.sqlite"
 
 
-def set_auction_successfully_scraped_value(auction_name, value):
+def set_auction_successfully_scraped_value(auction_name: str, value: int) -> None:
     session = create_session()
     scraped_auction = (
         session.query(Auction).filter(Auction.name == auction_name).first()
     )
-    scraped_auction.successfully_scraped = 1
+    scraped_auction.successfully_scraped = value
     session.commit()
 
 
-def initiate_db():
+def initiate_db() -> sqlalchemy.engine.base.Engine:
     db_file = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "db", DATABASE_NAME)
     )
     return global_init(db_file)
 
 
-def main():
+def main() -> None:
     db_engine = initiate_db()
     previous_auctions = get_all_auctions(PREVIOUS_AUCTIONS_URL)
     scrape_auctions(previous_auctions, db_engine)
 
 
-def check_if_auction_already_in_db(auction_name):
+def check_if_auction_already_in_db(auction_name) -> bool:
     session = create_session()
     auction_exists = (
         session.query(Auction.name).filter(Auction.name == auction_name).first()
@@ -50,7 +52,7 @@ def check_if_auction_already_in_db(auction_name):
 
 
 def save_auction_in_db_without_scrape_status(
-    auction_number, auction_name, auction_year
+    auction_number: str, auction_name: str, auction_year: int
 ):
     session = create_session()
     auction = Auction(number=auction_number, name=auction_name, year=auction_year)
@@ -59,22 +61,26 @@ def save_auction_in_db_without_scrape_status(
     return auction.id
 
 
-def get_auction_number_from_name(auction_name):
+def get_auction_number_from_name(auction_name: str) -> str:
     return auction_name.rsplit(" ", 1)[1]
 
 
-def create_auction_lot_url_from_number(auction_number):
+def create_auction_lot_url_from_number(auction_number: str) -> str:
     return f"https://www.bukowskis.com/auctions/{auction_number}/lots"
 
 
-def scrape_and_store_auction(auction_lot_url, auction_id, auction_year, db_engine):
+def scrape_and_store_auction(
+    auction_lot_url, auction_id, auction_year, db_engine
+) -> None:
     df = get_lots_by_department(auction_lot_url)
     df["auction_year"] = auction_year
     df["auction_id"] = auction_id
     df.to_sql("lots", db_engine, if_exists="append", index=False)
 
 
-def scrape_auctions(auctions_to_scrape, db_engine):
+def scrape_auctions(
+    auctions_to_scrape: List, db_engine: sqlalchemy.engine.base.Engine
+) -> None:
     for year, auction_names in auctions_to_scrape:
         for auction_name in auction_names:
             print(auction_name)

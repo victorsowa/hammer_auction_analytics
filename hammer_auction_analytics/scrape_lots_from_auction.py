@@ -1,12 +1,14 @@
+from typing import List, Optional
+
 import pandas as pd
 
 from scrape_lots_from_lot_page import get_information_from_lots
 from shared import get_page, get_soup
 
 
-AUCTION_URL = "https://www.bukowskis.com/auctions/567/lots"
+AUCTION_URL: str = "https://www.bukowskis.com/auctions/567/lots"
 
-NON_DEPARTMENT_SEARCH_FILTERS = [
+NON_DEPARTMENT_SEARCH_FILTERS: List[str] = [
     "Kortast tid kvar",
     "Lägsta utropspris",
     "Högsta utropspris",
@@ -21,7 +23,7 @@ NON_DEPARTMENT_SEARCH_FILTERS = [
 ]
 
 
-def get_lots_from_all_subpages(parent_url):
+def get_lots_from_all_subpages(parent_url: str) -> Optional[List[dict]]:
     current_page = 1
     try_another_page = True
 
@@ -37,9 +39,10 @@ def get_lots_from_all_subpages(parent_url):
             current_page += 1
         except TypeError:
             return scraped_lots
+    return None  # This is not really a possible outcome. Added to make mypy happy and for consistency.
 
 
-def get_all_departments(lots_url):
+def get_all_departments(lots_url: str) -> List[str]:
     page = get_page(lots_url)
     soup = get_soup(page.content)
     search_filters_boxes = soup.find_all("ul", class_="c-search-filters__box")
@@ -57,7 +60,7 @@ def get_all_departments(lots_url):
     ]
 
 
-def replace_url_unfriendly_characters_in_department_name(department):
+def replace_url_unfriendly_characters_in_department_name(department: str) -> str:
     return (
         department.replace(" &", "")
         .replace(" ", "-")
@@ -68,7 +71,7 @@ def replace_url_unfriendly_characters_in_department_name(department):
     )
 
 
-def get_url_friendly_department_names(departments):
+def get_url_friendly_department_names(departments: List[str]) -> List[str]:
     url_friendly_department_names = []
     for department in departments:
         url_friendly_name = replace_url_unfriendly_characters_in_department_name(
@@ -78,7 +81,7 @@ def get_url_friendly_department_names(departments):
     return url_friendly_department_names
 
 
-def get_lots_by_department(auction_url):
+def get_lots_by_department(auction_url: str) -> pd.DataFrame:
     departments = get_all_departments(auction_url)
     print("Found", len(departments), "departments.")
     print(departments)
