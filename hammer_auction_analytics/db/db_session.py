@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from rich import print
 
 from hammer_auction_analytics.db.modelbase import SqlAlchemyBase
 
@@ -13,7 +14,7 @@ def global_init(db_file: str):
         raise Exception("You must specify a db file.")
 
     conn_str = "sqlite:///" + db_file.strip()
-    print("Connecting to DB with {}".format(conn_str))
+    print(f"[bold]Connecting to DB with {conn_str}[/]")
 
     engine = sa.create_engine(
         conn_str, echo=False, connect_args={"check_same_thread": False}

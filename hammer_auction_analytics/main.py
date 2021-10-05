@@ -7,6 +7,8 @@ sys.path.insert(0, folder)
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
+from rich import print
+from rich.padding import Padding
 
 from shared import get_page, get_soup
 from scrape_lots_from_auction import get_lots_by_department
@@ -82,13 +84,16 @@ def scrape_auctions(
     auctions_to_scrape: List, db_engine: sqlalchemy.engine.base.Engine
 ) -> None:
     for year, auction_names in auctions_to_scrape:
+
         for auction_name in auction_names:
-            print(auction_name)
+            print(Padding(f"[bold]{auction_name}[/]", (1, 0, 0, 0), expand=True))
             auction_exists = check_if_auction_already_in_db(
                 auction_name
             )  # This could be done once instead, and filter away all existing
             if not auction_exists:
-                print(auction_name, "does not exist in database, will try to scrape.")
+                print(
+                    f"{auction_name}, does not exist in database, will try to scrape."
+                )
                 auction_number = get_auction_number_from_name(auction_name)
 
                 auction_id = save_auction_in_db_without_scrape_status(
@@ -103,12 +108,12 @@ def scrape_auctions(
                     )
                     set_auction_successfully_scraped_value(auction_name, 1)
                 except Exception as e:
-                    print("Scraping ran in to error:", e)
-                    print("No results will be saved.")
+                    print("[bold red]Scraping ran in to error:[/]", e)
+                    print("[bold red]No results will be saved.[/]")
                     set_auction_successfully_scraped_value(auction_name, 0)
 
             else:
-                print(auction_name, "already in database.")
+                print(f"[yellow]{auction_name}, already in database.[/]")
 
 
 if __name__ == "__main__":
