@@ -15,12 +15,14 @@ def separate_lot_number_and_name(lot_title: str) -> List[str]:
     return lot_title.split(". ", 1)
 
 
-def convert_bs4_navigable_string_to_string(bs4_navigable_string: str) -> str:
+def convert_bs4_navigable_string_to_string(
+    bs4_navigable_string: bs4.element.NavigableString,
+) -> str:
     string = str(bs4_navigable_string)
     return string.replace(u"\xa0", u" ").replace(u"\xc0", u" ")
 
 
-def get_estimate(lot_estimate: str, lot_name: str) -> Estimates:
+def get_estimate(lot_estimate: bs4.element.NavigableString, lot_name: str) -> Estimates:
     lot_estimate_string = convert_bs4_navigable_string_to_string(lot_estimate)
     raw_values, currency = lot_estimate_string.rsplit(" ", 1)
     values_without_spaces = raw_values.replace(" ", "")
@@ -67,7 +69,7 @@ def get_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List[di
 
         lot_result = lot.find(
             "div", class_="c-lot-index-lot__result-value"
-        ).string  # TODO create int out of space seperated number string, account for Återrop (also in english?)
+        ).string  # TODO create int out of space seperated number string, account for Återrop (also in english?) # noqa: E501
         result = get_result(lot_result, lot_name)
 
         lot_estimate = lot.find("div", class_="c-lot-index-lot__estimate-value").string
