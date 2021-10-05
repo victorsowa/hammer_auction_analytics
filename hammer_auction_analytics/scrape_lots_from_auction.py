@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import pandas as pd
+from rich import print
 
 from scrape_lots_from_lot_page import get_information_from_lots
 from shared import get_page, get_soup
@@ -29,7 +30,7 @@ def get_lots_from_all_subpages(parent_url: str) -> Optional[List[dict]]:
 
     child_url_template = parent_url + "/page/"
 
-    print(child_url_template)
+    print(parent_url)
     scraped_lots = []
 
     while try_another_page:
@@ -99,10 +100,11 @@ def get_lots_by_department(auction_url: str) -> pd.DataFrame:
         department_lots = get_lots_from_all_subpages(department_url)
         department_df = pd.DataFrame(department_lots)
         department_df["department"] = department
-        print("Number of scraped objects in department:", department_df.shape[0])
+        print(f"Number of scraped objects in department: {department_df.shape[0]}")
         department_dfs.append(department_df)
-
-    return pd.concat(department_dfs, ignore_index=True)
+    full_auction_df = pd.concat(department_dfs, ignore_index=True)
+    print(f"[bold]Number of scraped objects in auction[/]: {full_auction_df.shape[0]}")
+    return full_auction_df
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from collections import namedtuple
 from typing import List, Dict
 
 import bs4
+from rich import print
 
 from shared import get_page, get_soup
 
@@ -19,7 +20,7 @@ def convert_bs4_navigable_string_to_string(
     bs4_navigable_string: bs4.element.NavigableString,
 ) -> str:
     string = str(bs4_navigable_string)
-    return string.replace(u"\xa0", u" ").replace(u"\xc0", u" ")
+    return string.replace("\xa0", " ").replace("\xc0", " ")
 
 
 def get_estimate(lot_estimate: bs4.element.NavigableString, lot_name: str) -> Estimates:
@@ -37,7 +38,8 @@ def get_estimate(lot_estimate: bs4.element.NavigableString, lot_name: str) -> Es
             return Estimates(min_estimate, None, currency)
         except ValueError:
             print(
-                lot_name, "could not parse estimate, value was: ", lot_estimate_string
+                f"[yellow]{lot_name}, could not parse estimate, value was: [/]",
+                lot_estimate_string,
             )
             return Estimates(None, None, None)
 
@@ -50,7 +52,10 @@ def get_result(lot_result: str, lot_name: str) -> Result:
     except ValueError:
         if lot_result_string == "Återrop":
             return Result("Return", None)
-        print(lot_name, "could not parse result, value was: ", lot_result_string)
+        print(
+            f"[yellow] {lot_name}, could not parse result, value was: [/]",
+            lot_result_string,
+        )
         return Result(None, None)
 
 

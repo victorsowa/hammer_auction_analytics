@@ -3,3 +3,4 @@ bs4
 sqlalchemy
 pandas
 pytest
+rich
