@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from rich import print
 from rich.padding import Padding
 
-from shared import get_page, get_soup
+from shared import get_page, get_soup, initiate_db
 from scrape_lots_from_auction import get_lots_by_department
 from get_all_auctions import get_all_auctions
 from db.db_session import global_init, create_session
@@ -18,8 +18,6 @@ from db.auctions import Auction
 
 
 PREVIOUS_AUCTIONS_URL = "https://www.bukowskis.com/sv/auctions/past/hammer"
-
-DATABASE_NAME = "db.sqlite"
 
 
 def set_auction_successfully_scraped_value(auction_name: str, value: int) -> None:
@@ -29,13 +27,6 @@ def set_auction_successfully_scraped_value(auction_name: str, value: int) -> Non
     )
     scraped_auction.successfully_scraped = value
     session.commit()
-
-
-def initiate_db() -> sqlalchemy.engine.base.Engine:
-    db_file = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "db", DATABASE_NAME)
-    )
-    return global_init(db_file)
 
 
 def main() -> None:
