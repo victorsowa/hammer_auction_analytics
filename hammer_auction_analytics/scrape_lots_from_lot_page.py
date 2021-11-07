@@ -23,7 +23,9 @@ def convert_bs4_navigable_string_to_string(
     return string.replace("\xa0", " ").replace("\xc0", " ")
 
 
-def get_estimate(lot_estimate: bs4.element.NavigableString, lot_name: str) -> Estimates:
+def scrape_lot_estimate(
+    lot_estimate: bs4.element.NavigableString, lot_name: str
+) -> Estimates:
     lot_estimate_string = convert_bs4_navigable_string_to_string(lot_estimate)
     raw_values, currency = lot_estimate_string.rsplit(" ", 1)
     values_without_spaces = raw_values.replace(" ", "")
@@ -44,7 +46,11 @@ def get_estimate(lot_estimate: bs4.element.NavigableString, lot_name: str) -> Es
             return Estimates(None, None, None)
 
 
-def get_result(lot_result: str, lot_name: str) -> Result:
+def scrape_lot_result(lot_result: str, lot_name: str) -> Result:
+    """The lot can be sold with a price, returned or it can also be missing
+    for various reasons (some known are: lot has been withdrawn before
+    the auction, it is a collection of several lots that has there own result
+    already in the auction.)"""
     lot_result_string = convert_bs4_navigable_string_to_string(lot_result)
     try:
         raw_value, currency = lot_result_string.rsplit(" ", 1)
@@ -65,7 +71,7 @@ def scrape_lot_information(lots_url: str) -> bs4.element.Tag:
     return soup.find("div", class_="c-lot-index-lots--narrow")
 
 
-def get_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List[dict]:
+def scrape_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List[dict]:
     structured_lots = []
 
     for lot in lots:
@@ -75,10 +81,10 @@ def get_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List[di
         lot_result = lot.find(
             "div", class_="c-lot-index-lot__result-value"
         ).string  # TODO create int out of space seperated number string, account for Återrop (also in english?) # noqa: E501
-        result = get_result(lot_result, lot_name)
+        result = scrape_lot_result(lot_result, lot_name)
 
         lot_estimate = lot.find("div", class_="c-lot-index-lot__estimate-value").string
-        estimate = get_estimate(lot_estimate, lot_name)
+        estimate = scrape_lot_estimate(lot_estimate, lot_name)
 
         lot = {
             "number": lot_number,
@@ -93,11 +99,11 @@ def get_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List[di
     return structured_lots
 
 
-def get_information_from_lots(lot_url: str) -> List[dict]:
+def scrape_information_from_lots(lot_url: str) -> List[dict]:
     scraped_lots = scrape_lot_information(lot_url)
-    return get_structured_information_from_lots(scraped_lots)
+    return scrape_structured_information_from_lots(scraped_lots)
 
 
 if __name__ == "__main__":
     URL = "https://www.bukowskis.com/auctions/632/lots"
-    print(get_information_from_lots(URL))
+    print(scrape_information_from_lots(URL))
