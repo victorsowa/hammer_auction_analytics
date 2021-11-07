@@ -5,17 +5,19 @@ from shared import get_page, get_soup
 PREVIOUS_AUCTIONS_URL = "https://www.bukowskis.com/sv/auctions/past/hammer"
 
 
-def get_all_auctions(previous_auctions_url: str) -> Iterable[Tuple[int, List[str]]]:
+def scrape_auction_names_and_year(
+    previous_auctions_url: str,
+) -> Iterable[Tuple[int, List[str]]]:
     page = get_page(previous_auctions_url)
     soup = get_soup(page.content)
 
-    auction_years = get_auction_years(soup)
-    auction_names = get_auction_names(soup)
+    auction_years = scrape_auction_years(soup)
+    auction_names = scrape_auction_names(soup)
 
     return zip(auction_years, auction_names)
 
 
-def get_auction_years(previous_auction_soup) -> List[int]:
+def scrape_auction_years(previous_auction_soup) -> List[int]:
     auction_year_divs = previous_auction_soup.find_all("div", class_="s-markdown")
     return [
         int(year.find("h2").string)
@@ -24,7 +26,7 @@ def get_auction_years(previous_auction_soup) -> List[int]:
     ]
 
 
-def get_auction_names(previous_auction_soup) -> List[List[str]]:
+def scrape_auction_names(previous_auction_soup) -> List[List[str]]:
     auction_grids = previous_auction_soup.find_all("ul", class_="c-grid")
     auction_name_grid_divs = [
         grid.find_all("div", class_="c-auctions__name") for grid in auction_grids
@@ -36,4 +38,4 @@ def get_auction_names(previous_auction_soup) -> List[List[str]]:
 
 
 if __name__ == "__main__":
-    get_all_auctions(PREVIOUS_AUCTIONS_URL)
+    scrape_auction_names_and_year(PREVIOUS_AUCTIONS_URL)
