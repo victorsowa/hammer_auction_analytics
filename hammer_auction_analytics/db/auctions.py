@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from hammer_auction_analytics.db.modelbase import SqlAlchemyBase
+from db.modelbase import SqlAlchemyBase
 
 
 class Auction(SqlAlchemyBase):

@@ -9,17 +9,17 @@ sys.path.insert(0, folder)
 import pytest
 
 from scrape_lots_from_auction import (
-    get_url_friendly_department_names,
+    create_url_friendly_department_names,
     replace_url_unfriendly_characters_in_department_name,
-    get_all_departments,
-    get_lots_by_department,
+    scrape_all_department_names,
+    scrape_lots_by_department,
 )
 
 
 AUCTION_WITH_DEPARTMENTS = "https://www.bukowskis.com/en/auctions/633/lots"
 AUCTION_WITHOUT_DEPARTMENTS = "https://www.bukowskis.com/en/auctions/H022/lots"
 
-RESULTS_FROM_AUCTION_WITH_DEPARTMENTS_BY_DEPARTMENT = get_lots_by_department(
+RESULTS_FROM_AUCTION_WITH_DEPARTMENTS_BY_DEPARTMENT = scrape_lots_by_department(
     AUCTION_WITH_DEPARTMENTS
 )
 
@@ -34,16 +34,16 @@ def test_replace_url_unfriendly_characters_in_department_name_special_character(
     assert url_friendly_name == "silver-objects-of-vertu"
 
 
-def test_get_url_friendly_department_names_list_of_url_friendly_names():
+def test_create_url_friendly_department_names_list_of_url_friendly_names():
     departments = ["Silver & Objects of Vertu", "Glass"]
 
-    url_friendly_departments = get_url_friendly_department_names(departments)
+    url_friendly_departments = create_url_friendly_department_names(departments)
 
     assert url_friendly_departments == ["silver-objects-of-vertu", "glass"]
 
 
-def test_get_all_departments_expected_departments():
-    departments = get_all_departments(AUCTION_WITH_DEPARTMENTS)
+def test_scrape_all_department_names_expected_departments():
+    departments = scrape_all_department_names(AUCTION_WITH_DEPARTMENTS)
     assert departments == [
         "Furniture and Works of Art",
         "Silver & Objects of Vertu",
@@ -56,12 +56,12 @@ def test_get_all_departments_expected_departments():
     ]
 
 
-def test_get_all_departments_get_empty_list_where_there_are_no_departments():
-    departments = get_all_departments(AUCTION_WITHOUT_DEPARTMENTS)
+def test_scrape_all_department_names_get_empty_list_where_there_are_no_departments():
+    departments = scrape_all_department_names(AUCTION_WITHOUT_DEPARTMENTS)
     assert departments == []
 
 
-def test_get_results_by_department_get_expected_departments():
+def test_scrape_results_by_department_get_expected_departments():
     departments = RESULTS_FROM_AUCTION_WITH_DEPARTMENTS_BY_DEPARTMENT[
         "department"
     ].unique()
