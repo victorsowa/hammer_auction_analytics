@@ -2,7 +2,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from rich import print
 
-from hammer_auction_analytics.db.modelbase import SqlAlchemyBase
+from db.modelbase import SqlAlchemyBase
 
 __factory = None
 
@@ -22,7 +22,7 @@ def global_init(db_file: str):
 
     __factory = orm.sessionmaker(bind=engine)
 
-    import hammer_auction_analytics.db.__all_models
+    import db.__all_models
 
     SqlAlchemyBase.metadata.create_all(engine)
     return engine

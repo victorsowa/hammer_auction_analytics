@@ -1,9 +1,4 @@
-import sys
-import os
 from typing import List
-
-folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, folder)
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker

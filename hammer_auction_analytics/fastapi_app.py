@@ -1,9 +1,4 @@
-import os
-import sys
 from typing import List, Union
-
-folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, folder)
 
 from fastapi import FastAPI, Query
 import sqlalchemy
