@@ -65,6 +65,8 @@ def scrape_all_department_names(lots_url: str) -> List[str]:
 def replace_url_unfriendly_characters_in_department_name(department: str) -> str:
     return (
         department.replace(" &", "")
+        .replace(" – ", '-')
+        .replace(" - ", "-")
         .replace(" ", "-")
         .lower()
         .replace("ö", "o")
@@ -101,7 +103,10 @@ def scrape_lots_by_department(auction_url: str) -> pd.DataFrame:
         department_lots = scrape_lots_from_all_subpages(department_url)
         department_df = pd.DataFrame(department_lots)
         department_df["department"] = department
-        print(f"Number of scraped objects in department: {department_df.shape[0]}")
+        if department_df.shape[0] > 0:
+            print(f"Number of scraped objects in department: {department_df.shape[0]}")
+        else:
+            print("[red]Found no objects in department, check if this is correct.[/]")
         department_dfs.append(department_df)
     full_auction_df = pd.concat(department_dfs, ignore_index=True)
     print(f"[bold]Number of scraped objects in auction[/]: {full_auction_df.shape[0]}")
