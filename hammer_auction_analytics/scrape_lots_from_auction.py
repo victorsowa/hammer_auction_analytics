@@ -67,6 +67,7 @@ def replace_url_unfriendly_characters_in_department_name(department: str) -> str
         department.replace(" &", "")
         .replace(" – ", '-')
         .replace(" - ", "-")
+        .replace(".", "")
         .replace(" ", "-")
         .lower()
         .replace("ö", "o")

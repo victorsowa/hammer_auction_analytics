@@ -17,3 +17,4 @@ class Lot(SqlAlchemyBase):
     estimate_currency = Column(String)
     result = Column(Integer)
     result_currency = Column(String)
+    is_return = Column(Integer)

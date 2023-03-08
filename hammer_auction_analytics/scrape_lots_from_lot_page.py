@@ -9,7 +9,7 @@ from shared import get_page, get_soup
 
 Lot = namedtuple("Lot", "number name estimate result")
 Estimates = namedtuple("Estimates", "min max currency")
-Result = namedtuple("Result", "value currency")
+Result = namedtuple("Result", "value currency is_return")
 
 
 def separate_lot_number_and_name(lot_title: str) -> List[str]:
@@ -54,15 +54,15 @@ def scrape_lot_result(lot_result: str, lot_name: str) -> Result:
     lot_result_string = convert_bs4_navigable_string_to_string(lot_result)
     try:
         raw_value, currency = lot_result_string.rsplit(" ", 1)
-        return Result(int(raw_value.replace(" ", "")), currency)
+        return Result(int(raw_value.replace(" ", "")), currency, 0)
     except ValueError:
         if lot_result_string == "Återrop":
-            return Result("Return", None)
+            return Result(None, None, 1)
         print(
             f"[yellow] {lot_name}, could not parse result, value was: [/]",
             lot_result_string,
         )
-        return Result(None, None)
+        return Result(None, None, None)
 
 
 def scrape_lot_information(lots_url: str) -> bs4.element.Tag:
@@ -94,6 +94,7 @@ def scrape_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List
             "estimate_currency": estimate.currency,
             "result": result.value,
             "result_currency": result.currency,
+            "is_return": result.is_return,
         }
         structured_lots.append(lot)
     return structured_lots
