@@ -7,7 +7,7 @@ from scrape_lots_from_lot_page import scrape_information_from_lots
 from shared import get_page, get_soup
 
 
-AUCTION_URL: str = "https://www.bukowskis.com/auctions/567/lots"
+AUCTION_URL: str = "https://www.bukowskis.com/auctions/577/lots"
 
 NON_DEPARTMENT_SEARCH_FILTERS: List[str] = [
     "Kortast tid kvar",

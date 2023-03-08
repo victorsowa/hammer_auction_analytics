@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import bs4
 from rich import print
@@ -24,9 +24,13 @@ def convert_bs4_navigable_string_to_string(
 
 
 def scrape_lot_estimate(
-    lot_estimate: bs4.element.NavigableString, lot_name: str
+    lot_estimate: Optional[bs4.element.NavigableString], lot_name: str
 ) -> Estimates:
-    lot_estimate_string = convert_bs4_navigable_string_to_string(lot_estimate)
+    if lot_estimate is None:
+        print(f"[yellow]{lot_name}, had no estimate[/]")
+        return Estimates(None, None, None)
+    lot_estimate_b4_string = lot_estimate.string
+    lot_estimate_string = convert_bs4_navigable_string_to_string(lot_estimate_b4_string)
     raw_values, currency = lot_estimate_string.rsplit(" ", 1)
     values_without_spaces = raw_values.replace(" ", "")
     try:
@@ -82,8 +86,8 @@ def scrape_structured_information_from_lots(lots: List[bs4.element.Tag]) -> List
             "div", class_="c-lot-index-lot__result-value"
         ).string  # TODO create int out of space seperated number string, account for Återrop (also in english?) # noqa: E501
         result = scrape_lot_result(lot_result, lot_name)
-
-        lot_estimate = lot.find("div", class_="c-lot-index-lot__estimate-value").string
+        
+        lot_estimate = lot.find("div", class_="c-lot-index-lot__estimate-value")
         estimate = scrape_lot_estimate(lot_estimate, lot_name)
 
         lot = {
