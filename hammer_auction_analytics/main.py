@@ -63,7 +63,8 @@ def scrape_and_store_auction(
     df = scrape_lots_by_department(auction_lot_url)
     df["auction_year"] = auction_year
     df["auction_id"] = auction_id
-    df.to_sql("lots", db_engine, if_exists="append", index=False)
+    with db_engine.connect() as connection:
+        df.to_sql("lots", connection, if_exists="append", index=False)
 
 
 def scrape_auctions(
